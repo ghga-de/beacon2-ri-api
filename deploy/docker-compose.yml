@@ -3,6 +3,8 @@ version: '3.1'
 networks:
   beacon-priv:
   idp-priv:
+  traefik-proxy:
+    external: true
   pub:
   my-app-network:
     external: true
@@ -29,7 +31,7 @@ services:
     #image: beacon2ri/training_ui:v0.1
     #hostname: beacon_training_ui    
     #ports:
-    #  - 9000:8080
+    #  - 9500:8080
     #networks:
     #  - beacon-priv
 
@@ -49,6 +51,7 @@ services:
       MONGO_INITDB_DATABASE: beacon
     volumes:
       - ./mongo-init/:/docker-entrypoint-initdb.d/:ro
+      - beacon_mongo_db:/data/db
     networks:
       - beacon-priv
       - my-app-network
@@ -56,15 +59,23 @@ services:
   mongo-express:
     image: mongo-express
     restart: always
-    ports:
-      - 8081:8081
+    #ports:
+    #  - 2081:8081
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
     networks:
+      - traefik-proxy
       - beacon-priv
-
+    labels:
+      - "traefik.enable=true"
+      - "traefik .docker.network=traefik-proxy"
+      - "traefik.http.routers.mongo-express.rule=Host(`login.gdi.dkfz.de`)"
+      - "traefik.http.routers.mongo-express.tls=true"
+      - "traefik.http.routers.mongo-express.entrypoints=websecure"
+        #- "traefik.http.routers.mongo-express.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mongo-express.loadbalancer.server.port=8081"
   ###########################################
   # Beacon
   ###########################################
@@ -75,7 +86,7 @@ services:
     hostname: beacon
     container_name: beacon
     volumes:
-      # - ../beacon:/beacon/beacon  # inject the code, so we see the modifications "live"
+      #- ../beacon:/beacon/beacon  # inject the code, so we see the modifications "live"
       # - ../ui/static:/beacon/ui/static
       # - ../ui/templates:/beacon/ui/templates
       - ./conf.py:/beacon/beacon/conf.py
@@ -84,13 +95,22 @@ services:
       - ../beacon/request/cohorts.yml:/beacon/beacon/request/cohorts.yml
       - ../beacon/request/response_type.yml:/beacon/beacon/request/response_type.yml
       - ../beacon/db/ontologies:/beacon/beacon/db/ontologies
-    ports:
-      - "5050:5050"
+        #ports:
+        #- "5050:5050"
     networks:
       - beacon-priv
       - pub
       - idp-priv
       - my-app-network
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-proxy"
+      - "traefik.http.routers.beacon.rule=Host(`beacon.gdi.dkfz.de`)"
+      - "traefik.http.routers.beacon.entrypoints=websecure"
+      - "traefik.http.routers.beacon.tls=true"
+        #- "traefik.http.routers.beacon.tls.certresolver=letsencrypt"
+      - "traefik.http.services.beacon.loadbalancer.server.port=5050"
     working_dir: '/beacon'
     entrypoint: ['python','-m','beacon']
     # entrypoint: ['/bin/sleep','100000000']
@@ -151,7 +171,7 @@ services:
     volumes:
       - ./beacon-realm.json:/tmp/beacon-realm.json
     ports:
-      - "8080:8080"
+      - "8083:8080"
       - "9991:8443"
     networks:
       - pub
@@ -186,5 +206,6 @@ services:
       - ../frontend/.env:/frontend/.env
       - ../frontend/src/config.json:/frontend/src/config.json
 
-
+volumes:
+  beacon_mongo_db:
 

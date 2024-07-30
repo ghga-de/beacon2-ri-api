@@ -1,3 +1,5 @@
+Anime_Characters: ['GAMABUNTA_SKIN', 'CHOPPER_ANTLERS', 'KURAMA_FANG']
+Disney_Characters: ['MICKEY_MOUSE_EAR', 'MINNIE_MOUSE_NOSE', 'DONALD_DUCK_BEAK']
 rd-connect_dataset: ['Case1_IC', 'Case1_F', 'Case1_M', 'Case2_IC', 'Case2_F', 'Case2_M', 'Case3_IC', 'Case2_F', 'Case2_M', 'Case4_IC', 'Case4_F', 'Case4_M', 'Case5_IC', 'Case5_F', 'Case5_M', 'Case6_IC', 'Case6_F', 'Case6_M','Case1F', 'Case1C', 'Case1M', 'Case2F', 'Case2C', 'Case2M', 'Case3F', 'Case3C', 'Case3M', 'Case4F', 'Case4C', 'Case4M', 'Case5F', 'Case5C', 'Case5M', 'Case6F', 'Case6C', 'Case6M']
 AV_Dataset: ["AV0101", "AV0102"]
 B1MG-COADREAD: ['186_case', '186_control', '186', '185_case', '185_control', '185', '187_case', '187_control', '187', '187_case', '187_control', '187']

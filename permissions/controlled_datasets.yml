@@ -6,5 +6,8 @@ dummy_user:
 - AV_Dataset
 hola: []
 new_user: []
+wasiu:
+- Disney_Characters
+- Anime_Characters
 test_user:
 - CINECA_synthetic_cohort_EUROPE_UK1
